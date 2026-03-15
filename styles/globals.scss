@@ -1,0 +1,56 @@
+@use 'template' as T;
+
+html,
+body {
+    padding: 0;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
+        Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+
+    // &::-webkit-scrollbar {
+    //   width: 10px;
+    // }
+
+    // &::-webkit-scrollbar-track {
+    //   background: transparent;
+    // }
+
+    // &::-webkit-scrollbar-thumb {
+    //   background: transparent;
+    // }
+
+    // &:hover::-webkit-scrollbar-thumb {
+    //   background: #cfcfcf;
+    // }
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+a {
+    color: T.$mainColor;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+.react-horizontal-scrolling-menu--scroll-container::-webkit-scrollbar {
+    display: none;
+}
+
+.react-horizontal-scrolling-menu--scroll-container {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
+
+.react-horizontal-scrolling-menu--arrow-left,
+.react-horizontal-scrolling-menu--arrow-right {
+    position: relative;
+}

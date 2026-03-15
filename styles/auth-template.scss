@@ -1,0 +1,12 @@
+@use 'template' as T;
+@use 'main-template' as MT;
+
+$authMaxWidth: 320px;
+
+@mixin section() {
+    @include MT.section();
+}
+
+@mixin sectionCenter($maxWidth: $authMaxWidth) {
+    @include MT.sectionCenter($maxWidth);
+}

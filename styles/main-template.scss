@@ -1,0 +1,33 @@
+@use './template.scss' as T;
+
+$maxWidthPc: 1440px;
+$maxWidthPc2: 1300px;
+$paddingPc: 40px;
+$marginPc: 40px;
+
+$maxWidthPhone: 320px;
+$paddingPhone: 10px;
+$marginPhone: 10px;
+
+$headerFixed: 32px;
+$headerHeight: 54px;
+
+$authMaxWidth: 360px;
+
+@mixin section() {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding-left: $paddingPc;
+    padding-right: $paddingPc;
+
+    @media screen and (max-width: T.$mdMin) {
+        padding-left: $paddingPhone;
+        padding-right: $paddingPhone;
+    }
+}
+
+@mixin sectionCenter($maxWidth: $maxWidthPc) {
+    width: 100%;
+    max-width: $maxWidth;
+}

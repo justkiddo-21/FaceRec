@@ -1,0 +1,22 @@
+@use 'template' as T;
+@use 'main-template' as MT;
+
+@mixin sectionTitle() {
+    .sectionTitle {
+        width: 100%;
+        margin-bottom: MT.$marginPc;
+
+        > h2 {
+            font-size: 2.2em;
+            font-weight: 400;
+            margin: 0;
+            text-align: center;
+        }
+
+        > p {
+            font-size: 1.1rem;
+            margin: 10px 0 0 0;
+            text-align: center;
+        }
+    }
+}

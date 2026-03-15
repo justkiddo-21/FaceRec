@@ -1,0 +1,92 @@
+$xsMin: 0px;
+$xsMax: 575.98px;
+$smMin: 576px;
+$smMax: 767.98px;
+$mdMin: 768px;
+$mdMax: 991.98px;
+$lgMin: 992px;
+$lgMax: 1199.98px;
+$xlMin: 1200px;
+$xlMax: 1599.98px;
+$xxlMin: 1600px;
+
+$mainColor: rgb(3, 99, 234);
+$mainColor2: rgba(0, 90, 230, 1);
+$mainColor3: rgba(0, 90, 230, 1);
+$backgroundColor: #f1f2f3;
+$borderColor: #ccc;
+
+$borderRadius: 5px;
+
+@mixin animHoverZoom {
+    &:hover {
+        transform: scale(1.2);
+        transition-duration: 0.5s;
+        z-index: 9;
+        position: relative;
+    }
+}
+
+@mixin resetUlLi() {
+    ul {
+        margin: 0;
+        padding: 0;
+
+        li {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+    }
+}
+
+//////////////////////
+
+$componentHeight: 32px;
+
+@mixin title() {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin: 0 0 5px 0;
+}
+
+@mixin button($width: auto) {
+    width: $width;
+    height: $componentHeight;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 10px;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    font-weight: bold;
+    background-color: $mainColor;
+    color: #fff;
+    white-space: nowrap;
+
+    &:hover {
+        background-color: rgba(3, 99, 234, 0.9);
+    }
+}
+
+@mixin inputText($width: auto) {
+    width: $width;
+    height: $componentHeight;
+    border-radius: 5px;
+    outline: none;
+    padding: 0 10px;
+    border: 1px solid $borderColor;
+}
+
+@mixin select($width: auto) {
+    width: $width;
+    height: $componentHeight;
+    border-radius: 5px;
+    outline: none;
+    padding: 0 10px;
+    border: 1px solid $borderColor;
+}
