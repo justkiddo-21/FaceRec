@@ -1,0 +1,91 @@
+name: Deploy vCare
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'vcare/**/*'
+
+env:
+  VCARE_IMAGE_REGISTRY: ghcr.io/${{ github.repository }}/vcare
+  VCARE_CONTAINER_NAME: vphone-production-vcare
+  VCARE_CONTAINER_HOME: /root/projects/vphone/production/vcare
+  VCARE_HOST: vcare.vphone.vn
+  VCARE_PORT: 3000
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: vcare/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('vcare/package-lock.json', 'vcare/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: vcare
+          push: true
+          tags: |
+            ${{ env.VCARE_IMAGE_REGISTRY }}:main
+            ${{ env.VCARE_IMAGE_REGISTRY }}:${{ github.sha }}
+          build-args: RELEASE=prod
+          cache-from: type=registry,ref=${{ env.VCARE_IMAGE_REGISTRY }}:main
+          cache-to: type=inline
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Copy deploy scripts
+        run: |
+          scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ./deploy/deploy.sh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ env.VCARE_CONTAINER_HOME }}/deploy.sh
+          scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ./deploy/template.yml ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ env.VCARE_CONTAINER_HOME }}/template.yml
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key_path: ~/.ssh/id_rsa
+          script: |
+            cd ${{ env.VCARE_CONTAINER_HOME }}
+            export RELEASE='prod'
+            export CONTAINER_INSTANCE=1
+            export DEPLOY_IMAGE=${{ env.VCARE_IMAGE_REGISTRY }}:main
+            echo $DEPLOY_IMAGE
+            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} ghcr.io
+            sh deploy.sh $DEPLOY_IMAGE ${{ env.VCARE_CONTAINER_NAME }} ${{ env.VCARE_HOST }} ${{ env.VCARE_PORT }} $CONTAINER_INSTANCE $RELEASE
